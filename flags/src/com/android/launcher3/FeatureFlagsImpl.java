@@ -580,7 +580,8 @@ public final class FeatureFlagsImpl implements FeatureFlags {
 
 
     public boolean letterFastScroller() {
-        return false;
+        // Velo: alphabet letter rail on by default for strong drawer fast-scroll.
+        return true;
     }
 
     @Override

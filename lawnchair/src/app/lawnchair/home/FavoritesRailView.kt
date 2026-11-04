@@ -18,7 +18,9 @@ package app.lawnchair.home
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +28,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,8 +43,8 @@ import com.android.launcher3.touch.ItemClickHandler
 /**
  * Vertical favorites rail for [HomeLayoutMode.VERTICAL_RAIL].
  *
- * MVP: long-press drag-reorder; order persistence is owned by [FavoritesRailController]
- * via [FavoritesRailOrderStore] (Prefs-backed Favorites ids).
+ * Long-press drag-reorder; swipe start-to-end to remove. Persistence / membership owned by
+ * [FavoritesRailController] via [FavoritesRailOrderStore].
  */
 class FavoritesRailView @JvmOverloads constructor(
     context: Context,
@@ -53,32 +56,39 @@ class FavoritesRailView @JvmOverloads constructor(
         fun onRailOrderChanged(items: List<ItemInfo>)
     }
 
-    private var orderChangedListener: OrderChangedListener? = null
-
-    private val adapter = FavoritesRailAdapter { items ->
-        orderChangedListener?.onRailOrderChanged(items)
+    fun interface RemoveListener {
+        fun onRailItemRemoved(item: ItemInfo)
     }
+
+    private var orderChangedListener: OrderChangedListener? = null
+    private var removeListener: RemoveListener? = null
+
+    private val adapter = FavoritesRailAdapter(
+        onOrderCommitted = { items -> orderChangedListener?.onRailOrderChanged(items) },
+        onRemove = { item -> removeListener?.onRailItemRemoved(item) },
+    )
 
     private val recyclerView = RecyclerView(context).apply {
         layoutManager = LinearLayoutManager(context)
         layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         clipToPadding = false
         val density = resources.displayMetrics.density
+        // Bottom-weighted padding for one-handed reach.
         setPadding(
             paddingLeft,
-            (24 * density).toInt(),
+            (32 * density).toInt(),
             paddingRight,
-            (48 * density).toInt(),
+            (72 * density).toInt(),
         )
         isNestedScrollingEnabled = true
         itemAnimator = null
+        overScrollMode = OVER_SCROLL_IF_CONTENT_SCROLLS
     }
 
     private val itemTouchHelper = ItemTouchHelper(DragCallback())
 
     init {
-        // Soft scrim so classic grid icons are not readable through the rail.
-        setBackgroundColor(0x99000000.toInt())
+        background = buildScrimBackground()
         recyclerView.adapter = adapter
         itemTouchHelper.attachToRecyclerView(recyclerView)
         addView(recyclerView)
@@ -91,15 +101,41 @@ class FavoritesRailView @JvmOverloads constructor(
         orderChangedListener = listener
     }
 
+    fun setRemoveListener(listener: RemoveListener?) {
+        removeListener = listener
+    }
+
     fun setItems(items: List<ItemInfo>) {
         adapter.submit(items)
     }
 
     fun currentItems(): List<ItemInfo> = adapter.snapshot()
 
+    private fun buildScrimBackground(): GradientDrawable {
+        val surface = resolveColor(android.R.attr.colorBackground, 0xFF121212.toInt())
+        val scrim = ColorUtils.setAlphaComponent(surface, 0xCC)
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(scrim)
+        }
+    }
+
+    private fun resolveColor(attr: Int, fallback: Int): Int {
+        val tv = TypedValue()
+        return if (context.theme.resolveAttribute(attr, tv, true)) {
+            if (tv.resourceId != 0) {
+                ContextCompat.getColor(context, tv.resourceId)
+            } else {
+                tv.data
+            }
+        } else {
+            fallback
+        }
+    }
+
     private inner class DragCallback : ItemTouchHelper.SimpleCallback(
         ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-        0,
+        ItemTouchHelper.END,
     ) {
         override fun isLongPressDragEnabled(): Boolean = true
 
@@ -115,7 +151,9 @@ class FavoritesRailView @JvmOverloads constructor(
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            // No swipe dismiss in MVP.
+            val pos = viewHolder.bindingAdapterPosition
+            if (pos == NO_POSITION) return
+            adapter.removeAt(pos)
         }
 
         override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
@@ -131,7 +169,7 @@ class FavoritesRailView @JvmOverloads constructor(
                     itemView.animate()
                         .scaleX(1.04f)
                         .scaleY(1.04f)
-                        .translationZ(8f)
+                        .translationZ(12f)
                         .setDuration(120)
                         .start()
                 }
@@ -151,6 +189,7 @@ class FavoritesRailView @JvmOverloads constructor(
 
     private class FavoritesRailAdapter(
         private val onOrderCommitted: (List<ItemInfo>) -> Unit,
+        private val onRemove: (ItemInfo) -> Unit,
     ) : RecyclerView.Adapter<FavoritesRailAdapter.Holder>() {
         private val items = mutableListOf<ItemInfo>()
         private var pendingCommit = false
@@ -171,6 +210,13 @@ class FavoritesRailView @JvmOverloads constructor(
             notifyItemMoved(from, to)
             pendingCommit = true
             return true
+        }
+
+        fun removeAt(position: Int) {
+            if (position !in items.indices) return
+            val item = items.removeAt(position)
+            notifyItemRemoved(position)
+            onRemove(item)
         }
 
         fun notifyOrderCommitted() {

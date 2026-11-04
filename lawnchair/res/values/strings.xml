@@ -198,7 +198,13 @@
     <string name="home_layout_mode_description">Vertical favorites list or classic grid</string>
     <string name="home_layout_mode_vertical_rail">Vertical list</string>
     <string name="home_layout_mode_classic_grid">Classic grid</string>
-    <string name="favorites_rail_reorder_hint">Long-press and drag to reorder</string>
+    <string name="favorites_rail_reorder_hint">Long-press and drag to reorder. Swipe to remove.</string>
+    <string name="favorites_rail_add">Add to favorites</string>
+    <string name="favorites_rail_remove">Remove from favorites</string>
+    <string name="favorites_rail_added">Added to favorites</string>
+    <string name="favorites_rail_removed">Removed from favorites</string>
+    <string name="favorites_rail_add_failed">Could not add to favorites</string>
+    <string name="favorites_rail_switch_to_vertical">Switch Home layout to Vertical list first</string>
     <string name="home_screen_description">Feed, grid, icons</string>
 
     <string name="home_screen_actions">Home screen actions</string>

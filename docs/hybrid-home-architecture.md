@@ -2,9 +2,9 @@
 
 **Product:** Velo (`app.velo.launcher`)  
 **Base:** Lawnchair `16-dev` / AOSP Launcher3 + Quickstep  
-**Status:** Phase 1 MVP in progress — rail drag-reorder + Prefs order persistence  
+**Status:** Phase 1 MVP complete on `feat/velo-mvp-complete` (add/remove + polish)  
 **Updated:** 2026-11-05 Asia/Calcutta  
-**Branch:** `feat/favorites-rail-mvp`
+**Branch:** `feat/velo-mvp-complete`
 
 ---
 
@@ -221,8 +221,8 @@ Reload policy: changing `home_layout_mode` → recreate or targeted show/hide (p
 
 - [x] Persist order (**Option C MVP**: Prefs-backed Favorites ids via `FavoritesRailOrderStore`)
 - [x] Long-press drag-reorder (`ItemTouchHelper` on `FavoritesRailView`)
-- [ ] Add from All Apps / popup “Add to home”; remove from rail
-- [ ] One-handed metrics polish (bottom-weighted padding, large touch targets)
+- [x] Add from All Apps / popup “Add to favorites”; remove from rail (swipe + shortcut)
+- [x] One-handed metrics polish (bottom-weighted padding, large touch targets)
 - [x] Hide page indicator while rail is home (workspace kept inflated/invisible)
 - [ ] Full migration classic → rail (hotseat + first screen) beyond seed-from-model
 - **Exit criteria:** daily-driver usable as Niagara-like home without widgets.
@@ -306,7 +306,9 @@ Reload policy: changing `home_layout_mode` → recreate or targeted show/hide (p
 4. Populate from currently bound workspace/hotseat apps (no DB migration).
 5. Show/hide vs `Workspace` / page indicator based on mode; smoke-test All Apps + Overview.
 
-**Out of scope for that PR:** reorder persistence, migration, drawer polish, Lawndeck changes.
+**Shipped after that PR:** reorder persistence (PR #2), add/remove + swipe, letterFastScroller on, Live Information off by default, privacy inventory (`docs/privacy.md`).
+
+**Still later:** Favorites DB Option A, Lawndeck changes, Magisk/QuickSwitch, device gesture matrix.
 
 **Build:**  
 `JAVA_HOME=/home/box/jdk21 ANDROID_HOME=/home/box/android-sdk ./gradlew assembleLawnWithQuickstepGithubDebug --no-configuration-cache`
