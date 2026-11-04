@@ -168,6 +168,24 @@ class PreferenceManager2 @Inject constructor(
         defaultValue = "",
     )
 
+    /**
+     * True after the rail has seeded or the user has added/removed items.
+     * Prevents an empty order list from re-seeding removed favorites.
+     */
+    val favoritesRailMembershipInitialized = preference(
+        key = booleanPreferencesKey("favorites_rail_membership_initialized"),
+        defaultValue = false,
+    )
+
+    /**
+     * Newline-separated [com.android.launcher3.util.ComponentKey] strings waiting to join
+     * the rail after [com.android.launcher3.model.ItemInstallQueue] binds them.
+     */
+    val favoritesRailPendingKeys = preference(
+        key = stringPreferencesKey("favorites_rail_pending_keys"),
+        defaultValue = "",
+    )
+
     val iconShape = preference(
         key = stringPreferencesKey(name = "icon_shape"),
         defaultValue = IconShape.fromString(

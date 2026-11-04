@@ -158,7 +158,8 @@ class LawnchairLauncher : QuickstepLauncher() {
     private var hasBackGesture = false
 
     val gestureController by unsafeLazy { GestureController(this) }
-    private var favoritesRailController: FavoritesRailController? = null
+    var favoritesRailController: FavoritesRailController? = null
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         layoutInflater.factory2 = LawnchairLayoutFactory(this)
@@ -287,7 +288,13 @@ class LawnchairLauncher : QuickstepLauncher() {
     override fun getSupportedShortcuts(container: Int): Stream<SystemShortcut.Factory<*>> = Stream.concat(
         super.getSupportedShortcuts(container),
         Stream.concat(
-            Stream.of(LawnchairShortcut.UNINSTALL, LawnchairShortcut.CUSTOMIZE, LawnchairShortcut.OPEN_IN_STORE),
+            Stream.of(
+                LawnchairShortcut.UNINSTALL,
+                LawnchairShortcut.CUSTOMIZE,
+                LawnchairShortcut.OPEN_IN_STORE,
+                LawnchairShortcut.ADD_TO_RAIL,
+                LawnchairShortcut.REMOVE_FROM_RAIL,
+            ),
             Stream.of(LawnchairShortcut.PAUSE_APPS),
         ),
     )

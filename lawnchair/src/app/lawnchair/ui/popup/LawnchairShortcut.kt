@@ -23,6 +23,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 import app.lawnchair.LawnchairLauncher
+import app.lawnchair.home.HomeLayoutMode
 import app.lawnchair.override.CustomizeAppDialog
 import app.lawnchair.preferences2.PreferenceManager2
 import app.lawnchair.preferences2.firstCached
@@ -190,6 +191,34 @@ class LawnchairShortcut {
 
             PauseApps(activity, itemInfo, originalView)
         }
+
+        val ADD_TO_RAIL =
+            SystemShortcut.Factory { activity: LawnchairLauncher, itemInfo: ItemInfo, originalView: View ->
+                val prefs2 = PreferenceManager2.getInstance(activity)
+                if (prefs2.homeLayoutMode.firstCached() != HomeLayoutMode.VERTICAL_RAIL) {
+                    return@Factory null
+                }
+                if (prefs2.lockHomeScreen.firstCached()) return@Factory null
+                val controller = activity.favoritesRailController ?: return@Factory null
+                if (controller.isOnRail(itemInfo)) return@Factory null
+                // Apps / shortcuts / folders that can be pinned.
+                if (itemInfo.targetComponent == null && itemInfo !is com.android.launcher3.model.data.FolderInfo) {
+                    return@Factory null
+                }
+                AddToRail(activity, itemInfo, originalView)
+            }
+
+        val REMOVE_FROM_RAIL =
+            SystemShortcut.Factory { activity: LawnchairLauncher, itemInfo: ItemInfo, originalView: View ->
+                val prefs2 = PreferenceManager2.getInstance(activity)
+                if (prefs2.homeLayoutMode.firstCached() != HomeLayoutMode.VERTICAL_RAIL) {
+                    return@Factory null
+                }
+                if (prefs2.lockHomeScreen.firstCached()) return@Factory null
+                val controller = activity.favoritesRailController ?: return@Factory null
+                if (!controller.isOnRail(itemInfo)) return@Factory null
+                RemoveFromRail(activity, itemInfo, originalView)
+            }
     }
 
     class Customize(
@@ -386,6 +415,40 @@ class LawnchairShortcut {
                 else -> return null
             }
             return Intent(Intent.ACTION_VIEW, Uri.parse(uri)).setPackage(installerPackage)
+        }
+    }
+
+    class AddToRail(
+        private val launcher: LawnchairLauncher,
+        itemInfo: ItemInfo,
+        originalView: View,
+    ) : SystemShortcut<LawnchairLauncher>(
+        R.drawable.ic_home_pin,
+        R.string.favorites_rail_add,
+        launcher,
+        itemInfo,
+        originalView,
+    ) {
+        override fun onClick(view: View) {
+            dismissTaskMenuView()
+            launcher.favoritesRailController?.addToRail(mItemInfo)
+        }
+    }
+
+    class RemoveFromRail(
+        private val launcher: LawnchairLauncher,
+        itemInfo: ItemInfo,
+        originalView: View,
+    ) : SystemShortcut<LawnchairLauncher>(
+        R.drawable.ic_remove_no_shadow,
+        R.string.favorites_rail_remove,
+        launcher,
+        itemInfo,
+        originalView,
+    ) {
+        override fun onClick(view: View) {
+            dismissTaskMenuView()
+            launcher.favoritesRailController?.removeFromRail(mItemInfo)
         }
     }
 }
