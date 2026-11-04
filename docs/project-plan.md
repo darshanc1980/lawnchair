@@ -49,7 +49,7 @@ Build a home-screen launcher that beats Niagara, Lawnchair, Smart Launcher, and 
 |----|-------|-------|
 | #1 | Rebrand + architecture + HomeLayoutMode stub | Merged |
 | #2 | Rail drag-reorder + order persistence | Merged |
-| (this) | MVP complete: add/remove, alphabet, privacy, M3 rail, docs | `feat/velo-mvp-complete` |
+| [#3](https://github.com/darshanc1980/lawnchair/pull/3) | MVP complete: add/remove, alphabet, privacy, M3 rail, docs | Open (`feat/velo-mvp-complete` @ `d6c5afb5bc`) |
 
 ## Later phases
 
