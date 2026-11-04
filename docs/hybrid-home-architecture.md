@@ -2,9 +2,9 @@
 
 **Product:** Velo (`app.velo.launcher`)  
 **Base:** Lawnchair `16-dev` / AOSP Launcher3 + Quickstep  
-**Status:** Phase 0 spike landed — `HomeLayoutMode` + stub `FavoritesRailView`  
-**Updated:** 2026-11-04 ~23:30 Asia/Calcutta  
-**Branch:** `feat/home-layout-mode-stub`
+**Status:** Phase 1 MVP in progress — rail drag-reorder + Prefs order persistence  
+**Updated:** 2026-11-05 Asia/Calcutta  
+**Branch:** `feat/favorites-rail-mvp`
 
 ---
 
@@ -176,7 +176,7 @@ Interaction sketch (rail default):
 - Pros: simple for apps-only MVP.
 - Cons: duplicates Launcher model (badges, shortcuts, folders, uninstall sync); **not recommended** beyond throwaway spike.
 
-**Spike default:** Option A with `cellY = order`, `cellX = 0`, single reserved screen id; folders allowed; **widgets ignored on rail** (remain in DB for grid restore).
+**MVP decision (2026-11-05):** **Option C for order only** — DataStore key `favorites_rail_order` stores comma-separated Favorites row ids. Icons / titles / launch / uninstall sync still come from `BgDataModel` + Favorites DB (desktop + hotseat pins). We deliberately **did not** pick Option A for MVP because rewriting `cellY` / moving items onto a reserved screen would corrupt classic-grid coordinates on mode toggle. Option A/B remains the Phase-2 target once the rail owns its own pin set. Folders allowed; **widgets ignored on rail**. See `FavoritesRailOrderStore`.
 
 ### 5.3 Migration
 
@@ -219,11 +219,14 @@ Reload policy: changing `home_layout_mode` → recreate or targeted show/hide (p
 
 ### Phase 1 — MVP vertical rail
 
-- Persist order (Option A); drag-reorder; add from All Apps / popup “Add to home”; remove.
-- One-handed metrics (bottom-weighted padding, large touch targets).
-- Hide page indicator / disable workspace paging while in rail mode.
-- Migration classic → rail (hotseat + first screen).
+- [x] Persist order (**Option C MVP**: Prefs-backed Favorites ids via `FavoritesRailOrderStore`)
+- [x] Long-press drag-reorder (`ItemTouchHelper` on `FavoritesRailView`)
+- [ ] Add from All Apps / popup “Add to home”; remove from rail
+- [ ] One-handed metrics polish (bottom-weighted padding, large touch targets)
+- [x] Hide page indicator while rail is home (workspace kept inflated/invisible)
+- [ ] Full migration classic → rail (hotseat + first screen) beyond seed-from-model
 - **Exit criteria:** daily-driver usable as Niagara-like home without widgets.
+- **Landed on:** `feat/favorites-rail-mvp`
 
 ### Phase 2 — Alphabet drawer polish
 
@@ -261,7 +264,7 @@ Reload policy: changing `home_layout_mode` → recreate or targeted show/hide (p
 
 1. **Default for first public build:** rail on by default, or classic default + “Try vertical home” onboarding?
 2. **Widgets on rail home:** none (recommended phase 1), single Smartspace row, or free-form later?
-3. **Persistence:** confirm Option A (Favorites convention) vs new container.
+3. **Persistence:** MVP = Option C (Prefs ids). Confirm Phase-2 move to Option A or B.
 4. **Seed favorites:** empty vs copy hotseat vs copy first-screen icons on first rail enable.
 5. **Folders on rail:** yes (recommended) vs apps-only MVP.
 6. **Dock in rail mode:** keep / auto-disable / merge dock icons into rail.
@@ -286,9 +289,12 @@ Reload policy: changing `home_layout_mode` → recreate or targeted show/hide (p
 
 ---
 
-## 11. Recommended first code spike (single smallest PR)
+## 11. Code spikes
 
-**Status:** Implemented on `feat/home-layout-mode-stub`.
+**Phase 0:** Implemented / merged — `HomeLayoutMode` + stub `FavoritesRailView` (PR #1).
+
+**Phase 1 MVP (this branch):** `feat/favorites-rail-mvp` — drag-reorder + `favorites_rail_order` persistence.
+
 
 **Title:** `feat(home): add HomeLayoutMode pref + stub FavoritesRailView`
 

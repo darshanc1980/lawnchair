@@ -26,22 +26,23 @@ import com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.model.data.FolderInfo
-import com.android.launcher3.model.data.ItemInfo
 import com.android.launcher3.model.data.WorkspaceItemInfo
 import com.android.launcher3.statemanager.StateManager
 import com.android.launcher3.util.Executors
 
 /**
- * Wires [FavoritesRailView] show/hide against [HomeLayoutMode] without rewriting Workspace.
+ * Wires [FavoritesRailView] show/hide against [HomeLayoutMode] and persists rail order.
  *
- * Spike behavior: rail lists already-bound desktop + hotseat apps/folders (no DB changes).
- * Preference changes recreate the launcher activity via PreferenceManager2.onSet.
+ * MVP: rail lists desktop + hotseat apps/folders; order lives in [FavoritesRailOrderStore]
+ * (DataStore ids). Widgets on the rail are skipped. Preference home_layout_mode still
+ * recreates the activity via PreferenceManager2.onSet.
  */
 class FavoritesRailController(
     private val launcher: LawnchairLauncher,
 ) {
     private val prefs2 = PreferenceManager2.getInstance(launcher)
     private val mode: HomeLayoutMode = prefs2.homeLayoutMode.firstCached()
+    private val orderStore = FavoritesRailOrderStore(prefs2)
 
     private val rail: FavoritesRailView?
         get() = launcher.findViewById(R.id.favorites_rail)
@@ -60,6 +61,9 @@ class FavoritesRailController(
     }
 
     fun attach() {
+        rail?.setOrderChangedListener { items ->
+            orderStore.persistFromItems(items)
+        }
         launcher.stateManager.addStateListener(stateListener)
         syncVisibility()
         if (mode == HomeLayoutMode.VERTICAL_RAIL) {
@@ -68,6 +72,7 @@ class FavoritesRailController(
     }
 
     fun detach() {
+        rail?.setOrderChangedListener(null)
         launcher.stateManager.removeStateListener(stateListener)
     }
 
@@ -82,19 +87,12 @@ class FavoritesRailController(
                         (info.container == CONTAINER_DESKTOP || info.container == CONTAINER_HOTSEAT) &&
                             (info is WorkspaceItemInfo || info is FolderInfo)
                     }
-                    .sortedWith(
-                        compareBy<ItemInfo>(
-                            { if (it.container == CONTAINER_HOTSEAT) 0 else 1 },
-                            { it.screenId },
-                            { it.cellY },
-                            { it.cellX },
-                        ),
-                    )
                     .toList()
             }
+            val ordered = orderStore.applyOrder(items, persistIfChanged = true)
             Executors.MAIN_EXECUTOR.execute {
                 if (launcher.isDestroyed) return@execute
-                rail?.setItems(items)
+                rail?.setItems(ordered)
                 syncVisibility()
             }
         }

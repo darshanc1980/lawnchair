@@ -159,6 +159,15 @@ class PreferenceManager2 @Inject constructor(
         onSet = { reloadHelper.recreate() },
     )
 
+    /**
+     * Ordered Favorites DB ids for [app.lawnchair.home.FavoritesRailView].
+     * Empty = seed from hotseat + desktop on next rail refresh. Does not recreate.
+     */
+    val favoritesRailOrder = preference(
+        key = stringPreferencesKey("favorites_rail_order"),
+        defaultValue = "",
+    )
+
     val iconShape = preference(
         key = stringPreferencesKey(name = "icon_shape"),
         defaultValue = IconShape.fromString(
