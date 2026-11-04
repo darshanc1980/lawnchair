@@ -194,6 +194,10 @@
     <string name="general_description">Colors, icon packs, notification dots</string>
 
     <string name="home_screen_label">Home screen</string>
+    <string name="home_layout_mode_label">Home layout</string>
+    <string name="home_layout_mode_description">Vertical favorites list or classic grid</string>
+    <string name="home_layout_mode_vertical_rail">Vertical list</string>
+    <string name="home_layout_mode_classic_grid">Classic grid</string>
     <string name="home_screen_description">Feed, grid, icons</string>
 
     <string name="home_screen_actions">Home screen actions</string>

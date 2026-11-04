@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple filled V for Velo; kept inside adaptive safe zone -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,30h12l12,34 12,-34h12L60,82H48z" />
+</vector>
