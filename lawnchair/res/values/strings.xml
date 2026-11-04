@@ -198,6 +198,7 @@
     <string name="home_layout_mode_description">Vertical favorites list or classic grid</string>
     <string name="home_layout_mode_vertical_rail">Vertical list</string>
     <string name="home_layout_mode_classic_grid">Classic grid</string>
+    <string name="favorites_rail_reorder_hint">Long-press and drag to reorder</string>
     <string name="home_screen_description">Feed, grid, icons</string>
 
     <string name="home_screen_actions">Home screen actions</string>

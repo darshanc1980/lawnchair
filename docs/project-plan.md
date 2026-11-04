@@ -2,7 +2,7 @@
 
 **Owner:** Darshan C (PM: Grok Bot)  
 **Updated:** 2026-11-04 ~23:03 Asia/Calcutta  
-**Status:** Fork live; Velo rebrand done; hybrid arch sketched; **Phase 0 stub (`HomeLayoutMode` + FavoritesRailView) on `feat/home-layout-mode-stub`**
+**Status:** PR #1 merged; **Phase 1 MVP rail reorder+persistence on `feat/favorites-rail-mvp`**
 
 ---
 
@@ -107,19 +107,21 @@ Default branch on fork: `16-dev`.
 1. ~~Fork under darshanc1980~~ **done** — https://github.com/darshanc1980/lawnchair
 2. ~~Rename / rebrand spike~~ **done** — Velo / `app.velo.launcher` on `feat/velo-rebrand`
 3. ~~Architecture sketch for hybrid home~~ **done** — `docs/hybrid-home-architecture.md` on `docs/hybrid-home-arch`
-4. **First code spike PR:** `HomeLayoutMode` pref + stub `FavoritesRailView` (see architecture §11)
-5. Optional: merge rebrand to `16-dev`, polish icon, decide nightly/play applicationIds later
-6. **Install debug APK** on a test device and baseline gesture / drawer performance vs Lawnchair stock
-7. **Privacy inventory:** confirm no analytics / crash trackers in dependency tree for the free build
-8. Resolve open PM questions in architecture §9 (default mode, widgets, persistence Option A, dock-in-rail)
+4. ~~First code spike PR~~ **done / merged** — PR #1 (`HomeLayoutMode` + stub rail)
+5. **Phase 1 MVP:** rail drag-reorder + Prefs order persistence — branch `feat/favorites-rail-mvp`
+6. Optional: polish icon, decide nightly/play applicationIds later
+7. **Install debug APK** on a test device; verify reorder survives relaunch
+8. **Privacy inventory:** confirm no analytics / crash trackers in dependency tree for the free build
+9. Resolve remaining PM questions in architecture §9 (widgets, dock-in-rail, Phase-2 Option A/B)
+10. Next after MVP rail: add/remove from rail, alphabet drawer polish
 
 ## Clone / build status (2026-11-04)
 
 | Field | Value |
 |-------|--------|
 | Path | `/workspace/lawnchair` |
-| Branch (base) | `16-dev` @ `85493b9776` |
-| Active feature branches | `feat/velo-rebrand`, `docs/hybrid-home-arch` |
+| Branch (base) | `16-dev` @ `42649fcd06` (PR #1 merged) |
+| Active feature branches | `feat/favorites-rail-mvp` (from merged `16-dev`) |
 | Remotes | `origin` = darshanc1980 fork; `upstream` = LawnchairLauncher |
 | Submodule | `platform_frameworks_libs_systemui` @ `24bfa2e83b174c36ae1cb9ff50d90883c3b87597` |
 | Gradle command | `./gradlew assembleLawnWithQuickstepGithubDebug --no-configuration-cache` |
