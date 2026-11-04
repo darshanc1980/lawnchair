@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import app.lawnchair.LawnchairApp
+import app.lawnchair.home.HomeLayoutMode
 import app.lawnchair.data.iconoverride.IconOverrideRepository
 import app.lawnchair.nexuslauncher.OverlayCallbackImpl
 import app.lawnchair.preferences.getAdapter
@@ -152,6 +153,12 @@ fun HomeScreenPreferences(
         val columns by prefs.workspaceColumns.getAdapter()
         val rows by prefs.workspaceRows.getAdapter()
         PreferenceGroup(heading = stringResource(id = R.string.layout)) {
+            ListPreference(
+                adapter = prefs2.homeLayoutMode.getAdapter(),
+                entries = HomeLayoutMode.entries(),
+                label = stringResource(id = R.string.home_layout_mode_label),
+                description = stringResource(id = R.string.home_layout_mode_description),
+            )
             NavigationActionPreference(
                 label = stringResource(id = R.string.home_screen_grid),
                 destination = HomeScreenGrid,

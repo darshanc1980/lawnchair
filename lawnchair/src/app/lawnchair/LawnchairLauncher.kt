@@ -36,6 +36,7 @@ import app.lawnchair.compat.LawnchairQuickstepCompat
 import app.lawnchair.data.AppDatabase
 import app.lawnchair.data.wallpaper.service.WallpaperService
 import app.lawnchair.gestures.GestureController
+import app.lawnchair.home.FavoritesRailController
 import app.lawnchair.gestures.VerticalSwipeTouchController
 import app.lawnchair.gestures.config.GestureHandlerConfig
 import app.lawnchair.gestures.ui.LawnchairShortcutActivity
@@ -75,6 +76,7 @@ import com.android.launcher3.uioverrides.states.BackgroundAppState
 import com.android.launcher3.uioverrides.states.OverviewState
 import com.android.launcher3.util.ActivityOptionsWrapper
 import com.android.launcher3.util.Executors
+import com.android.launcher3.util.IntSet
 import com.android.launcher3.util.RunnableList
 import com.android.launcher3.util.SystemUiController.UI_STATE_BASE_WINDOW
 import com.android.launcher3.util.Themes
@@ -156,6 +158,7 @@ class LawnchairLauncher : QuickstepLauncher() {
     private var hasBackGesture = false
 
     val gestureController by unsafeLazy { GestureController(this) }
+    private var favoritesRailController: FavoritesRailController? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         layoutInflater.factory2 = LawnchairLayoutFactory(this)
@@ -250,6 +253,8 @@ class LawnchairLauncher : QuickstepLauncher() {
         reloadIconsIfNeeded()
 
         AppDatabase.INSTANCE.get(this).checkpointSync()
+
+        favoritesRailController = FavoritesRailController(this).also { it.attach() }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -498,6 +503,8 @@ class LawnchairLauncher : QuickstepLauncher() {
     }
 
     override fun onDestroy() {
+        favoritesRailController?.detach()
+        favoritesRailController = null
         super.onDestroy()
         // Only actually closes if required, safe to call if not enabled
         SmartspacerClient.close()
@@ -550,6 +557,11 @@ class LawnchairLauncher : QuickstepLauncher() {
         ) {
             LauncherAppState.getInstance(this).model.reloadIfActive()
         }
+    }
+
+    override fun finishBindingItems(pagesBoundFirst: IntSet?) {
+        super.finishBindingItems(pagesBoundFirst)
+        favoritesRailController?.refreshFromModel()
     }
 
     companion object {

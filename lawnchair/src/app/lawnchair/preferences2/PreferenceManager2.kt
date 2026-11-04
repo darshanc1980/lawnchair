@@ -33,6 +33,7 @@ import app.lawnchair.font.FontCache
 import app.lawnchair.gestures.config.GestureHandlerConfig
 import app.lawnchair.gestures.handlers.SleepMode
 import app.lawnchair.gestures.type.GestureType
+import app.lawnchair.home.HomeLayoutMode
 import app.lawnchair.hotseat.HotseatMode
 import app.lawnchair.icons.CustomAdaptiveIconDrawable
 import app.lawnchair.icons.shape.IconShape
@@ -146,6 +147,16 @@ class PreferenceManager2 @Inject constructor(
         defaultValue = HotseatMode.fromString(context.getString(R.string.config_default_hotseat_mode)),
         parse = { HotseatMode.fromString(it) },
         save = { it.toString() },
+    )
+
+    val homeLayoutMode = preference(
+        key = stringPreferencesKey("home_layout_mode"),
+        defaultValue = HomeLayoutMode.fromString(
+            context.getString(R.string.config_default_home_layout_mode),
+        ),
+        parse = { HomeLayoutMode.fromString(it) },
+        save = { it.toString() },
+        onSet = { reloadHelper.recreate() },
     )
 
     val iconShape = preference(

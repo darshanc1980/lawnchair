@@ -2,7 +2,7 @@
 
 **Owner:** Darshan C (PM: Grok Bot)  
 **Updated:** 2026-11-04 ~23:03 Asia/Calcutta  
-**Status:** Fork live; Velo rebrand done; **hybrid-home architecture sketched**
+**Status:** Fork live; Velo rebrand done; hybrid arch sketched; **Phase 0 stub (`HomeLayoutMode` + FavoritesRailView) on `feat/home-layout-mode-stub`**
 
 ---
 

@@ -2,9 +2,9 @@
 
 **Product:** Velo (`app.velo.launcher`)  
 **Base:** Lawnchair `16-dev` / AOSP Launcher3 + Quickstep  
-**Status:** Design sketch (architecture-first; no product code in this doc)  
-**Updated:** 2026-11-04 ~23:03 Asia/Calcutta  
-**Branch:** `docs/hybrid-home-arch`
+**Status:** Phase 0 spike landed — `HomeLayoutMode` + stub `FavoritesRailView`  
+**Updated:** 2026-11-04 ~23:30 Asia/Calcutta  
+**Branch:** `feat/home-layout-mode-stub`
 
 ---
 
@@ -287,6 +287,8 @@ Reload policy: changing `home_layout_mode` → recreate or targeted show/hide (p
 ---
 
 ## 11. Recommended first code spike (single smallest PR)
+
+**Status:** Implemented on `feat/home-layout-mode-stub`.
 
 **Title:** `feat(home): add HomeLayoutMode pref + stub FavoritesRailView`
 
